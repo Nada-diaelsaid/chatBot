@@ -124,5 +124,10 @@
         <i class="bi bi-send-fill text-base"></i>
       </button>
     </form>
+    @if (error()) {
+      <p class="text-red-400 text-sm mt-2 text-center">
+        {{ error() }}
+      </p>
+      }
   </div>
 </div>
