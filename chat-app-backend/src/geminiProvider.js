@@ -16,17 +16,12 @@ class GeminiProvider {
 
     async generateResponse(prompt) {
         try {
-            const genai = new GoogleGenAI(this.apiKey);
-            const interaction = await genai.interactions.create({
+            const genai = new GoogleGenAI({ apiKey: this.apiKey });
+            const response = await genai.models.generateContent({
                 model: this.modelName,
-                input: prompt,
-                generation_config: {
-                    thinking_level: "low",
-                  },
-              
+                contents: prompt,
             });
-            console.log(interaction.output_text);
-
+            return response.text;
         }
         catch (error) {
             console.error('Error generating response:', error);

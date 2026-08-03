@@ -18,8 +18,7 @@ router.post('/chat', async (req, res) => {
         const geminiProvider = new GeminiProvider(
             process.env.GEMINI_API_KEY,
             process.env.GEMINI_MODEL);
-        // const response = await geminiProvider.generateResponse(message);
-        const response = geminiProvider.generateResponse(message);
+        const response = await geminiProvider.generateResponse(message);
         console.log('Generated Response:', response);
         res.json({ reply: response });
     }
