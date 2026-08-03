@@ -1,0 +1,22 @@
+[
+    {
+        "question": "What is the capital of France?",
+        "answer": "Paris"
+    },
+    {
+        "question": "What is the capital of Germany?",
+        "answer": "Berlin"
+    },
+    {
+        "question": "What is the capital of Italy?",
+        "answer": "Rome"
+    },
+    {
+        "question": "What is our refund policy?",
+        "answer": "We offer a 30-day refund policy for all our products."
+    },
+    {
+        "question": "Where can I track my order?",
+        "answer": "Use the order tracking page on our website with your order ID"
+    }
+]
