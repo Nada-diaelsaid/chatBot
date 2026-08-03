@@ -1,0 +1,128 @@
+<div class="flex h-screen w-screen items-center justify-center bg-black sm:p-6">
+  <div
+    class="flex h-full w-full flex-col overflow-hidden bg-neutral-950 sm:h-[90vh] sm:max-w-2xl sm:rounded-[2rem] sm:border sm:border-neutral-800 sm:shadow-2xl sm:shadow-black/50"
+  >
+    <!-- Header -->
+    <header class="flex items-center gap-3 border-b border-neutral-800 px-5 py-4 sm:px-6">
+      <div
+        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-teal-500/10 text-teal-400"
+      >
+        <i class="bi bi-chat-dots-fill text-xl"></i>
+      </div>
+      <div class="flex flex-col leading-tight">
+        <h1 class="text-base font-semibold text-white sm:text-lg">Technyks AI Chat</h1>
+        <p class="text-xs text-neutral-400 sm:text-sm">Your AI assistant</p>
+      </div>
+    </header>
+
+    <!-- Chat history -->
+    <div #scrollContainer class="flex-1 space-y-4 overflow-y-auto px-4 py-5 sm:px-6">
+      
+        <div class="flex flex-col space-y-4">
+
+            <!-- No history found -->
+            @if (history().length === 0 && !loading()) {
+                <div class="flex h-full flex-col items-center justify-center gap-3 text-center text-neutral-500">
+                  <div class="flex h-14 w-14 items-center justify-center rounded-full bg-neutral-900 text-teal-400">
+                    <i class="bi bi-chat-square-text text-2xl"></i>
+                  </div>
+                  <p class="text-sm sm:text-base">Start the conversation</p>
+                </div>
+              }
+              <!-- Chat message -->
+              @for (msg of history(); track $index) {
+                <div
+                class="flex flex-col"
+                [class.self-end]="msg?.sender === 'user'"
+                [class.self-start]="msg.sender !== 'user'"
+                [class.items-end]="msg?.sender === 'user'"
+                [class.items-start]="msg.sender !== 'user'"
+              >
+                <p
+                  [class.text-teal-400]="msg?.sender === 'user'"
+                  [class.text-gray-400]="msg?.sender !== 'user'"
+                  [class.me-3]="msg?.sender === 'user'"
+                  [class.ms-3]="msg?.sender !== 'user'"
+                  class="mb-1 text-xs"
+                >
+                  @if(msg?.sender === 'user') {
+                    You
+                  } @else {
+                    @if(msg?.modelName) {
+                    {{ msg?.modelName }}
+                    } @else {
+                      Jarvis Bot
+                    }
+                  }
+                </p>                 
+                <div
+                class="max-w-xs md:max-w-md lg:max-w-[85%] px-4 py-3 rounded-2xl"
+                [class.bg-teal-600]="msg?.sender === 'user'"
+                [class.bg-gray-700]="msg?.sender !== 'user'"
+              >
+    
+                <p
+                  class="text-sm"
+                  [class.whitespace-pre-wrap]="msg?.sender === 'bot'">
+                  {{ msg?.text }}
+                </p>
+              </div>
+                </div>
+              }
+        
+              @if (loading()) {
+                <div class="flex justify-start">
+                  <div class="max-w-[85%] rounded-2xl rounded-bl-sm bg-neutral-800 px-4 py-3 sm:max-w-[75%]">
+                    <div class="flex items-center gap-2 text-sm text-neutral-300">
+                      <span>Bot is typing</span>
+                      <span class="flex gap-1">
+                        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-teal-400"></span>
+                        <span
+                          class="h-1.5 w-1.5 animate-bounce rounded-full bg-teal-400"
+                          style="animation-delay: 0.15s"
+                        ></span>
+                        <span
+                          class="h-1.5 w-1.5 animate-bounce rounded-full bg-teal-400"
+                          style="animation-delay: 0.3s"
+                        ></span>
+                      </span>
+                    </div>
+                    <div class="mt-2 h-3 w-32 animate-pulse rounded-full bg-neutral-700 sm:w-40"></div>
+                  </div>
+                </div>
+              }
+        
+        </div>
+
+    </div>
+
+    <!-- Error banner -->
+    @if (error()) {
+      <p class="px-5 pb-1 text-sm text-red-400 sm:px-6">{{ error() }}</p>
+    }
+
+    <!-- Input form -->
+    <form
+      class="flex items-center gap-2 border-t border-neutral-800 px-4 py-3 sm:px-6 sm:py-4"
+      (ngSubmit)="sendMessage()"
+    >
+      <input
+        type="text"
+        name="message"
+        autocomplete="off"
+        placeholder="Type your message..."
+        class="flex-grow rounded-full bg-neutral-700 px-4 py-3 text-sm text-white placeholder-neutral-500 outline-none ring-1 ring-transparent transition focus:ring-2 focus:ring-teal-500 disabled:opacity-50 sm:text-base"
+        [ngModel]="message()"
+        (ngModelChange)="message.set($event)"
+        [disabled]="loading()"
+      />
+      <button
+        type="submit"
+        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-teal-500 text-white shadow-lg shadow-teal-500/20 transition hover:bg-teal-400 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-400 disabled:shadow-none"
+        [disabled]="loading() || !message().trim()"
+      >
+        <i class="bi bi-send-fill text-base"></i>
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+div::-webkit-scrollbar {
+  width: 6px;
+}
+
+div::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+div::-webkit-scrollbar-thumb {
+  background-color: rgba(45, 212, 191, 0.35);
+  border-radius: 999px;
+}
