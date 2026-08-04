@@ -1,0 +1,24 @@
+[
+    {
+        "question": "How do I reset my password?",
+        "answer": "To reset your password, please go to the password reset page and click forget password."
+    },
+    {
+        "question": "Do you offer free shipping?",
+        "answer": "Yes, we offer free shipping on all orders over $100."
+    },
+    {
+        "question": "Do you provide phone support",
+        "answer": "Yes, phone support is available from 9am to 5pm, Monday to Friday."
+    },
+    {
+        "question": "Do you offer a warranty?",
+        "answer": "Yes, we offer a 1-year warranty on all products."
+    },
+    {
+        "question": "Do you offer a refund?",
+        "answer": "Yes, we offer a 30-day refund policy for all products."
+    }
+
+
+]
