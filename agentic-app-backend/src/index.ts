@@ -1,6 +1,9 @@
 import express from "express";
 import cors from "cors";
-import chatRouter from "./routers/chatRouter.ts";
+import chatRouter from "./routers/chat.route.ts";
+import customerRouter from "./routers/customer.route.ts";
+import orderRouter from "./routers/order.route.ts";
+import weatherRouter from "./routers/weather.route.ts";
 
 const app = express();
 
@@ -8,6 +11,9 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api', chatRouter);
+app.use('/api', customerRouter);
+app.use('/api', orderRouter);
+app.use('/api', weatherRouter);
 
 const PORT: number = Number(process.env.PORT) || 3000;
 
