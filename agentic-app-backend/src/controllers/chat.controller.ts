@@ -1,4 +1,4 @@
-import GeminiService from "../services/gemini.services.ts";
+import { GEMEINI } from "../services/gemini.services.ts";
 
 import type { Request, Response } from "express";
 export default class ChatController {
@@ -9,12 +9,12 @@ export default class ChatController {
             return res.status(400).json({ error: 'Message is required' });
         }
         try {
-            const geminiService = new GeminiService(
-                process.env.GEMINI_API_KEY!,
-                process.env.GEMINI_MODEL!,
-                process.env.GEMINI_EMBEDDING_MODEL!
-            );
-            const response = await geminiService.generateResponse(message);
+            // const geminiService = new GeminiService(
+            //     process.env.GEMINI_API_KEY!,
+            //     process.env.GEMINI_MODEL!,
+            //     process.env.GEMINI_EMBEDDING_MODEL!
+            // );
+            const response = await GEMEINI.generateResponse(message);
             console.log('Generated response:', response);
             return res.json({ reply: response });
         }

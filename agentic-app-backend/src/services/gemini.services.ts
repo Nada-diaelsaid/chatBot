@@ -1,26 +1,42 @@
 import { GoogleGenAI } from '@google/genai';
 // To generate response using GeniAI
 class GeminiService {
-    private apiKey: string;
-    private modelName: string;
-    private embeddingModelName: string;
-    private genai: GoogleGenAI;
-    constructor(apiKey:string, modelName:string, embeddingModelName:string) {
-        this.apiKey = apiKey;
+
+    // Make GeminiService a singleton
+    private static instance: GeminiService;
+
+    
+    private readonly modelName: string;
+    private readonly embeddingModelName: string;
+    private readonly genai: GoogleGenAI;
+    private constructor() {
+        const modelName = process.env.GEMINI_MODEL || ''
+        const embeddingModelName = process.env.GEMINI_EMBEDDING_MODEL || ''
+        const apiKey = process.env.GEMINI_API_KEY;
+        
+        if (!apiKey) {
+            throw new Error('GEMINI_API_KEY is not set');
+        }
+
         this.modelName = modelName;
         // Embedding models (e.g. gemini-embedding-2-preview) are not valid for
         // generateContent, and chat models are not valid for embedContent, so
         // they must be configured separately.
         this.embeddingModelName = embeddingModelName || modelName;
-        this.genai = new GoogleGenAI({ apiKey: this.apiKey });
+        this.genai = new GoogleGenAI({ apiKey });
 
-        if (!apiKey) {
-            throw new Error('GEMINI_API_KEY is not set');
-        }
+        
 
         if (!modelName) {
             throw new Error('GEMINI_MODEL is not set');
         }
+    }
+
+    static getInstance(): GeminiService {
+        if (!this.instance) {
+            this.instance = new GeminiService();
+        }
+        return this.instance;
     }
 
     async generateResponse(prompt:string): Promise<string> {
@@ -71,5 +87,5 @@ class GeminiService {
     }
 }
 
-// To import anywhere in the project
-export default GeminiService;
+// Create a singleton instance of GeminiService
+export const GEMEINI = GeminiService.getInstance();
