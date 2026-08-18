@@ -1,9 +1,10 @@
+import { OPENAI } from "../services/openAI.service.ts";
 import { GEMEINI } from "../services/gemini.services.ts";
 
 import type { Request, Response } from "express";
 export default class ChatController {
     static async generateResponse(req: Request, res: Response) {
-        const { message } = req.body;
+        const { message, agentModel } = req.body;
     
         if(!message) {
             return res.status(400).json({ error: 'Message is required' });
@@ -14,8 +15,9 @@ export default class ChatController {
             //     process.env.GEMINI_MODEL!,
             //     process.env.GEMINI_EMBEDDING_MODEL!
             // );
+            // const response = await OPENAI.generateResponseWithTools(message);
             const response = await GEMEINI.generateResponseWithTools(message);
-            console.log('Generated response:', response);
+            console.log('Generated response using OpenAI:', response);
             return res.json({ reply: response });
         }
         catch (error: any) {
