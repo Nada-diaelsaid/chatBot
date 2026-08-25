@@ -10,7 +10,7 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "./dist",
     "sourceMap": true,
     "strict": true,
@@ -19,6 +19,6 @@
     "skipLibCheck": true,
   },
 
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "mcp/**/*"],
   "exclude": ["node_modules", "dist"]
 }
