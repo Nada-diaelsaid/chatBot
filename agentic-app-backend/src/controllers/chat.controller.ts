@@ -1,4 +1,5 @@
 import { GEMEINI } from "../services/gemini.services.ts";
+import { MCPClient } from "../../mcp/client/mcp_client.service.ts";
 
 import type { Request, Response } from "express";
 export default class ChatController {
@@ -9,12 +10,8 @@ export default class ChatController {
             return res.status(400).json({ error: 'Message is required' });
         }
         try {
-            // const geminiService = new GeminiService(
-            //     process.env.GEMINI_API_KEY!,
-            //     process.env.GEMINI_MODEL!,
-            //     process.env.GEMINI_EMBEDDING_MODEL!
-            // );
-            const response = await GEMEINI.generateResponse(message);
+            const mcp = await MCPClient.init();
+            const response = await GEMEINI.generateResponseWithTools(message, mcp.client);
             console.log('Generated response:', response);
             return res.json({ reply: response });
         }

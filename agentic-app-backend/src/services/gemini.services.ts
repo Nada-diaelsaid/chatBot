@@ -1,4 +1,6 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, mcpToTool } from '@google/genai';
+import {Client} from "@modelcontextprotocol/sdk/client"
+
 // To generate response using GeniAI
 class GeminiService {
 
@@ -85,6 +87,83 @@ class GeminiService {
         }
 
     }
+
+    extractResponseText(response: any): string {
+        const candidate = response.candidates[0];
+        if(!candidate) {
+            return '';
+        }
+        else {
+            // step 1: Find the primary text part in the model's final response
+            const text = candidate.content.parts[0].text;
+            if(text) {
+                // to remove white spaces.
+                return text.trim();
+            }
+            
+        }
+
+        // step 2: Fallback for debugging (rarely happens with auto tooling)
+        // will not give actual answer from LLM, but it will give us what is the response we got out of the funtion.
+        const structuredPart = candidate.content?.parts.find((p: any) => p.functionRespone?.response?.structuredContent);
+        if (structuredPart) {
+            // If the model gave NO text, but tool data exists, you can fall back to the data
+            return (
+              "Tool executed successfully, but no natural language summary was provided. Raw data:\n" +
+              JSON.stringify(
+                structuredPart.functionResponse.response.structuredContent,
+                null,
+                2
+              )
+            );
+          }
+      
+          return "No valid response was generated.";
+    }
+
+    // We will now create a function to generate a response with the help of tools
+    async generateResponseWithTools(prompt:string, mcpClient: Client): Promise<string> {
+        try {
+            const response = await this.genai.models.generateContent({
+                model: this.modelName,
+                // Will change content, this will help me to pass more prompts if needed.
+                contents: [{
+                    role: 'user',
+                    parts: [
+                        {
+                            text: prompt
+                        }
+                    ]
+                }],
+                config: {
+                    // Must pass this bec in case the user asks a question that is not related to the tools,
+                    // Gemini will answer using your intrinsic knowledge. (Answer coming directly from the model)
+                    systemInstruction:
+                    {
+                        role: 'model',
+                        parts:[{
+                            text: `You are an AI assistant specialized in E-commerce data (orders and customers) and weather data
+                            too. When user asks a question about orders or customers or weather information,
+                            use the provided ToolSchema. **If the questions is unrelated to your tools, 
+                            answer using your intrinsic knowledge.** Be concise and do not mention the tols were used unless asked.`,
+                        }],
+                    },
+                    // No need for follow up calls with mcpToTool functionality in Gemini.
+                    tools: [
+                        mcpToTool(mcpClient),
+                    ],
+                },
+
+            });
+            this.extractResponseText(response);
+            return response.text || '';
+        }
+        catch (error: any) {
+            console.error('Error generating response:', error);
+            throw error;
+        }
+    }
+
 }
 
 // Create a singleton instance of GeminiService

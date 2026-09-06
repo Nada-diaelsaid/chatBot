@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
-import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { createMCPServer } from "../../mcp/server/mcpServer.ts";
 import { randomUUID } from 'node:crypto';
-import { isInitializeRequest } from "@modelcontextprotocol/sdk/types";
+import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 
 const mcpServer = createMCPServer();
 
@@ -49,48 +49,50 @@ export class McpServerController {
     }
 
     // post function for client server connection
-    static async handlePost(req: Request, res: Response)
-    {
-        const sessionId = req.headers['mcp-session-id'] as string | undefined;
-
-        let transport = this.getSessionTransport(sessionId);
-
+    static async handlePost(req: Request, res: Response) {
+        // Check for existing session ID
+        const sessionId = req.headers["mcp-session-id"] as string | undefined;
+    
+        let transport = McpServerController.getSessionTransport(sessionId);
+    
         if (USE_SESSIONS) {
-            // New initialized session
-            if (!transport && isInitializeRequest(req.body))
-            {
-                console.log("Initialize new MCP session");
-                transport = this.createTransport();
-
-                // Connect to the MCP server.
-                await mcpServer.connect(transport);
-                await transport.handleRequest(req, res, req.body);
-                return;
-        
-            }
-            if (!transport) {
-                return res.status(400).json({
-                    jsonrpc:"2.0",
-                    error: {code: -32000, message: "No transport found" } });
-            }
-        }
-        if(!USE_SESSIONS)
-        {
-            // No sessions, so we need to create a new transport
-            // Stateles mode:
-            transport = this.createTransport();
-            if (!transport)
-            {
-                return res.status(400).send("Invalid or missing session ID");
-            }
-        
+          // NEW INITIALISATION REQUEST
+          if (!transport && isInitializeRequest(req.body)) {
+            console.log("Initializing new MCP session...");
+            transport = McpServerController.createTransport();
+    
+            // Connect to the MCP server
             await mcpServer.connect(transport);
-
-            await transport.handleRequest(req, res, req.body);
-            return;
-
+          }
+    
+          // Missing or invalid session
+          if (!transport) {
+            return res.status(400).json({
+              jsonrpc: "2.0",
+              error: {
+                code: -32000,
+                message: "Bad Request: No valid session ID provided",
+              },
+              id: null,
+            });
+          }
         }
-    }
+    
+        if (!USE_SESSIONS) {
+          // Stateless mode: new transport per request
+          transport = McpServerController.createTransport();
+    
+          // Connect to the MCP server
+          await mcpServer.connect(transport);
+        }
+    
+        if (!transport) {
+          return res.status(400).json({ error: "Transport not available" });
+        }
+    
+        // Handle the request
+        await transport.handleRequest(req, res, req.body);
+      }
 
     // GET: Server -> Client (notifications)
     static async handleGet(req: Request, res: Response)
@@ -102,7 +104,7 @@ export class McpServerController {
 
         const sessionId = req.headers['mcp-session-id'] as string | undefined;
 
-        const transport = this.getSessionTransport(sessionId);
+        const transport = McpServerController.getSessionTransport(sessionId);
 
         if (!transport)
         {
@@ -122,7 +124,7 @@ export class McpServerController {
 
         const sessionId = req.headers['mcp-session-id'] as string | undefined;
 
-        const transport = this.getSessionTransport(sessionId);
+        const transport = McpServerController.getSessionTransport(sessionId);
 
         if (!transport)
         {

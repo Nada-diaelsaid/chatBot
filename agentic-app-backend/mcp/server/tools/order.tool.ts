@@ -2,6 +2,26 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import * as z from 'zod/v4'; // Will use it for data validation
 import OrderService from "../../../src/services/order.service.ts";
 
+// Shared shape describing an order item, matching src/data/orders.data.ts
+const orderItemSchema = z.object({
+    _id: z.string(),
+    name: z.string(),
+    quantity: z.number(),
+    price: z.number(),
+});
+
+// Shared shape describing an order, matching src/data/orders.data.ts
+// (must include every field the underlying data actually has, otherwise
+// output validation fails with "must NOT have additional properties").
+const orderSchema = z.object({
+    _id: z.string(),
+    customerId: z.string(),
+    orderDate: z.string(),
+    totalAmount: z.number(),
+    status: z.string(),
+    items: z.array(orderItemSchema),
+});
+
 // This function is registering multiple tools.
 export function registerOrderTools(mcpServer: McpServer)
 {
@@ -17,11 +37,8 @@ export function registerOrderTools(mcpServer: McpServer)
             },
             outputSchema:
                 {
-                    orders: z.array(z.object(
-                    {
-                        _id: z.string(), customerId: z.string(), orderDate: z.string(), totalAmount: z.number()
-                    }
-                )) },
+                    orders: z.array(orderSchema),
+                },
         },
         async ({limit}) => {
             console.log("Getting orders...", limit);
@@ -47,13 +64,7 @@ export function registerOrderTools(mcpServer: McpServer)
             },
             outputSchema: 
             {
-                order: z.object(
-                    {
-                        _id: z.string(),
-                        customerId: z.string(),
-                        orderDate: z.string(),
-                        totalAmount: z.number()
-                    })
+                order: orderSchema,
             },
         },
         async ({id}) => {
@@ -80,8 +91,7 @@ export function registerOrderTools(mcpServer: McpServer)
             },
             outputSchema: 
             {
-                orders: z.array(z.object({ _id: z.string(), customerId: z.string(), orderDate: z.string(), totalAmount: z.number(),
-                customer: z.string() }))
+                orders: z.array(orderSchema.extend({ customer: z.string().optional() })),
             },
         },
         
