@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { MCPClient } from "../../mcp/client/mcp_client.service.ts";
 import { GEMEINI } from "../services/gemini.services.ts";
+import { OPENAI } from "../services/openAI.service.ts";
 
 export class AgentController {
     // Here we will chat with LLM model
@@ -15,16 +16,10 @@ export class AgentController {
 
             const mcp = await MCPClient.init();
             const tools = await mcp.getTools();
-            const response = await GEMEINI.generateResponseWithTools(message, mcp.client);
-            if(selectedModel === "gemini")
-            {                
-                console.log('In Agent controller, Generated response:', response);
-                return res.json({ reply: response });
-            }
-            else if(selectedModel === "gpt")
-            {
-                // Call OpenAI model
-            }
+            const LLM = selectedModel === "gemini" ? GEMEINI : OPENAI;
+            const response = await LLM.generateResponseWithTools(message, mcp.client);
+            console.log('In Agent controller, Generated response:', response);
+            return res.json({ reply: response });
         }
         catch (error: any) {
             console.error('Error generating response:', error);
