@@ -3,14 +3,14 @@ import { VectorStorePgVectorDB } from "./DBs/pgVector.db.ts";
 
 // Here we will decide to go for pgVector or chroma db
 
-export class VectoreStore {
+export class VectorStore {
     static get()
     {
         const backend = process.env.VECTOR_DB || 'chroma';
 
         if(backend === "chroma") return VectorStoreChromaDB;
 
-        else if (backend === "pgvector") return VectorStorePgVectorDB;
+        // else if (backend === "pgvector") return VectorStorePgVectorDB;
 
         else
         {
