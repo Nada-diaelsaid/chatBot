@@ -19,6 +19,8 @@
     "skipLibCheck": true,
   },
 
-  "include": ["src/**/*", "mcp/**/*"],
+  // Add rag/ to be able to use the projects configured types (@types/node)
+  // For example process.env.ENV_VAR
+  "include": ["src/**/*", "mcp/**/*", "rag/**/*"],
   "exclude": ["node_modules", "dist"]
 }
