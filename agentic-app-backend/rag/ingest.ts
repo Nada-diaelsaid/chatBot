@@ -59,6 +59,7 @@ function chunkText(text: string): string[]
 // Main ingestion function
 export async function ingestFolder(folderPath: string)
 {
+    console.log('Ingesting folder:', folderPath);
     // Which particular vectore DB we will be using.
     const store = VectorStore.get();
 
@@ -72,6 +73,8 @@ export async function ingestFolder(folderPath: string)
 
     for(const file of files)
     {
+        console.log(`Processing ${file}`);
+
         // We are only accepting those two file extensions.
         if(!file.endsWith('.txt') && !file.endsWith('.md')) continue;
 
@@ -105,6 +108,28 @@ export async function ingestFolder(folderPath: string)
                 metadata: { source: filePath}
             });
         }
+        console.log(`Ingested ${chunks.length} chunks from ${file}`);
     }
-    
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Testing ingestion fn through command line:
+// The only way of testing the success of this command is to test the rag itself.
+if(import.meta.url.includes('ingest')){
+    // Extract the folder from the second location on the command:
+    // node src/rag/ingest.ts ./src/data/rag_docs
+
+    // Add this command: node src/rag/ingest.ts ./src/data/rag_docs to package.json 
+    // in the script section, and use it from the command line.
+
+    // Before running this command: npm run rag:ingest, make sure that chroma db is running.
+
+    const folder = process.argv[2];
+    console.log('Folder:', folder);
+    if(!folder){
+        console.error('Please provide a folder path');
+        process.exit(1);
+    }
+
+    ingestFolder(folder);
 }

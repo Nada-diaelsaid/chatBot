@@ -57,13 +57,13 @@ export class VectorStoreChromaDB {
             embeddings: [embedding],
             // Add the document id and chunk index to the metadata.
             // This will help us later when we query for documents.
-            metadatas: {
+            metadatas: [{
                 docId,
                 chunkIndex,
                 // spread operator, instead of passing an object within an object,
                 // we pass the properties of the object. (spread it)
                 ...metadata,
-            },
+            }],
         });
     }
 

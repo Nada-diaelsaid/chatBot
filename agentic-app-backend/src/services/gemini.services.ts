@@ -58,9 +58,18 @@ class GeminiService {
     // embeddings funnction
     async generateEmbeddings(data: string | string[], task_type="RETRIEVAL_DOCUMENT") {
         try{
+            // NOTE: passing an array of raw strings here would be interpreted by the
+            // Gemini API as multiple *parts* of a single Content, producing exactly
+            // ONE merged embedding for the whole batch instead of one per string.
+            // Wrapping each string in its own { parts: [...] } object makes each
+            // one a separate Content, so we get one embedding per input string.
+            const contents = Array.isArray(data)
+                ? data.map(text => ({ parts: [{ text }] }))
+                : data;
+
             const response = await this.genai.models.embedContent({
                 model: this.embeddingModelName,
-                contents: data,
+                contents,
                 config: {
                     taskType: task_type,
                 },
