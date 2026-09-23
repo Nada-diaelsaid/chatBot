@@ -12,8 +12,8 @@ class GeminiService {
     private readonly embeddingModelName: string;
     private readonly genai: GoogleGenAI;
     private constructor() {
-        const modelName = process.env.GEMINI_MODEL || ''
-        const embeddingModelName = process.env.GEMINI_EMBEDDING_MODEL || ''
+        const modelName = process.env.GEMINI_MODEL || '';
+        const embeddingModelName = process.env.GEMINI_EMBEDDING_MODEL || '';
         const apiKey = process.env.GEMINI_API_KEY;
         
         if (!apiKey) {
@@ -24,7 +24,7 @@ class GeminiService {
         // Embedding models (e.g. gemini-embedding-2-preview) are not valid for
         // generateContent, and chat models are not valid for embedContent, so
         // they must be configured separately.
-        this.embeddingModelName = embeddingModelName || modelName;
+        this.embeddingModelName = embeddingModelName;
         this.genai = new GoogleGenAI({ apiKey });
 
         
@@ -67,6 +67,7 @@ class GeminiService {
                 ? data.map(text => ({ parts: [{ text }] }))
                 : data;
 
+            console.log("this.embeddingModelName", this.embeddingModelName);
             const response = await this.genai.models.embedContent({
                 model: this.embeddingModelName,
                 contents,

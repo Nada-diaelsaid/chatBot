@@ -10,7 +10,7 @@ export class VectorStore {
 
         if(backend === "chroma") return VectorStoreChromaDB;
 
-        // else if (backend === "pgvector") return VectorStorePgVectorDB;
+        else if (backend === "pgvector") return VectorStorePgVectorDB;
 
         else
         {
