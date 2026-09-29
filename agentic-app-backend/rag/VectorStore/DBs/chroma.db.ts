@@ -77,7 +77,7 @@ export class VectorStoreChromaDB {
         // As chroma already does it for us.
         const results = await this.collection.query({
             // must pass embeddings as an array
-            query_embeddings: [embedding],
+            queryEmbeddings: [embedding],
             // How many results to return.
             n_results: topK,
         });
