@@ -152,10 +152,24 @@ class GeminiService {
                     {
                         role: 'model',
                         parts:[{
-                            text: `You are an AI assistant specialized in E-commerce data (orders and customers) and weather data
-                            too. When user asks a question about orders or customers or weather information,
-                            use the provided ToolSchema. **If the questions is unrelated to your tools, 
-                            answer using your intrinsic knowledge.** Be concise and do not mention the tols were used unless asked.`,
+                            // We will change the systemInstruction here,  after adding the RAG tool, we will add a new instruction to the model, so that it can use the RAG tool to answer questions related to RAG.
+                            // text: `You are an AI assistant specialized in E-commerce data (orders and customers) and weather data
+                            // too. When user asks a question about orders or customers or weather information,
+                            // use the provided ToolSchema. **If the questions is unrelated to your tools, 
+                            // answer using your intrinsic knowledge.** Be concise and do not mention the tols were used unless asked.`,
+                            text: `You are an AI assistant that an answer questions using internal tools.
+                            TOOLS: You have access to the following tools:
+                            1. RAG Search Tool: This tool allows you to perform a RAG (Retrieval-Augmented Generation) search based on a user query. It retrieves relevant documents from a vector store and generates a prompt for the LLM to answer the query based on the retrieved context.
+                            2. Customer Tool: This tool allows you to retrieve customer information based on a customer ID.
+                            3. Order Tool: This tool allows you to retrieve order information based on an order ID.
+                            4. Weather Tool: This tool allows you to retrieve weather information based on a location and date.
+
+                            RULE: When a question relates to general company information, product info, help center info, refund/shipping/support info, ALWAYS call ragSearch tool.
+                            For any other domain choose the most relevant tool.
+                            If not tool fits answer with your own knowledge. Do not make up answers.
+                            Be concise and do not mention the tols were used unless asked.
+                            `,
+                            
                         }],
                     },
                     // No need for follow up calls with mcpToTool functionality in Gemini.

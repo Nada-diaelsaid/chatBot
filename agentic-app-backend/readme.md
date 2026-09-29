@@ -1,10 +1,18 @@
-<!-- For chromadb:
-// If you restart your PC or this terminal closes, remember
-//  you'll need to re-run chroma run --path ./getting-started from the agentic-app-backend directory 
-// to bring the server back up. 
-// Want me to set that up as an npm script (e.g. npm run chroma:serve) so it's a one-liner going forward?
+## Run ChromaDB on Windows
 
-// To kill chromadb server running: pkill -9 node (Linux.Mac version) -> Search for windows command. -->
+The `npx chroma` command invokes the JavaScript client's CLI, which does not support Windows x64. Install the Python Chroma server if needed:
+
+```powershell
+py -m pip install chromadb
+```
+
+Start the server from this directory. Calling the Python-installed executable explicitly avoids the `chroma` command resolving to the npm CLI:
+
+```powershell
+$pythonScripts = py -c "import sysconfig; print(sysconfig.get_path('scripts'))"
+& "$pythonScripts\chroma.exe" run --path ./src/vector-data
+```
+
 
 ## To view chromaDB use DB browser on windows.
 
@@ -40,3 +48,9 @@ nmake /F Makefile.win install
 4) Inside postgres:  CREATE DATABASE rag_vector_db;
 5) \c rage_vector_db
 6) CREATE EXTENSION IF NOT EXISTS vector;
+
+## RAG ingestion
+You can test on both ChromaDB and pgVector, change VECTOR_DB either `chroma` or `pgvector` and it will use the equivalent Vector sore.
+To ingest the documents found under ./src/data/rag_docs use cmd: npm run rag:ingest look package.json
+The command will chunk the documents under either chromaDB or postgres DB
+
